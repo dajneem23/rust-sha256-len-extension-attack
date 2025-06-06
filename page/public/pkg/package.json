@@ -1,0 +1,15 @@
+{
+  "name": "rust-sha256-len-extension-attack",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "rust_sha256_len_extension_attack_bg.wasm",
+    "rust_sha256_len_extension_attack.js",
+    "rust_sha256_len_extension_attack.d.ts"
+  ],
+  "main": "rust_sha256_len_extension_attack.js",
+  "types": "rust_sha256_len_extension_attack.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
