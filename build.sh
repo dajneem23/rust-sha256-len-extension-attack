@@ -10,4 +10,4 @@ curl https://sh.rustup.rs -sSf | sh -s -- -y && . "$HOME/.cargo/env"
 
 # This example requires to *not* create ES modules, therefore we pass the flag
 # `--target no-modules`
-wasm-pack build --target web --out-dir ./page/public/pkg --release 
+npx wasm-pack build --target web --out-dir ./page/public/pkg --release 
