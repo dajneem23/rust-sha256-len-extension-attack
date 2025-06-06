@@ -11,6 +11,11 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+
+// Instantiate the WebAssembly module with 32MB of memory.
+const wasmMemory = new WebAssembly.Memory({ initial: 512 });
+
+
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const url = new URL(request.url);

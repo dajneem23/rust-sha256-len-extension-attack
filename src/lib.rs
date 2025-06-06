@@ -3,7 +3,6 @@ pub mod utils;
 use hex;
 use hmac::{Hmac, Mac};
 use sha2::{Digest, Sha256};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use wasm_bindgen::prelude::*;
 
@@ -156,7 +155,31 @@ pub fn length_extension_attack(
     ForgedResult::new(forged_message, forged_mac)
 }
 
-fn main() {
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sha256_mac() {
+        let msg = b"test message";
+        let mac = sha256_mac(msg);
+        assert_eq!(
+            hex::encode(mac),
+            "c1b2f8d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0"
+        );
+    }
+
+    #[test]
+    fn test_hmac_sha256() {
+        let msg = b"test message";
+        let mac = hmac_sha256(msg);
+        assert_eq!(
+            hex::encode(mac),
+            "a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9"
+        );
+    }
+
+    #[test]
+    fn test_overall(){
     let message = b"user=alice&amount=1000";
     let extra = b"&admin=true";
 
@@ -195,25 +218,4 @@ fn main() {
         "HMAC is not vulnerable because the secret is used both at the beginning and end of the hash computation."
     );
 }
-
-#[wasm_bindgen(start)]
-fn run() {
-    let window = web_sys::window().expect("should have a window in this context");
-    let performance = window
-        .performance()
-        .expect("performance should be available");
-
-    console_log!("the current time (in ms) is {}", performance.now());
-
-    let start = perf_to_system(performance.timing().request_start());
-    let end = perf_to_system(performance.timing().response_end());
-
-    console_log!("request started at {}", humantime::format_rfc3339(start));
-    console_log!("request ended at {}", humantime::format_rfc3339(end));
-}
-
-fn perf_to_system(amt: f64) -> SystemTime {
-    let secs = (amt as u64) / 1_000;
-    let nanos = (((amt as u64) % 1_000) as u32) * 1_000_000;
-    UNIX_EPOCH + Duration::new(secs, nanos)
 }
