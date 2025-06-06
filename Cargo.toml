@@ -1,0 +1,36 @@
+[package]
+name = "rust-sha256-len-extension-attack"
+version = "0.1.0"
+edition = "2024"
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+sha2 = { version = "0.10.6", features = ["compress"] } 
+hmac = "0.12.1"
+hex = "0.4.3"
+wasm-bindgen = "0.2.100"
+web-sys = { version = "0.3.50", features = [
+  'Document',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Window',
+  "MessageEvent",
+  "Worker",
+  "Performance",
+  "PerformanceTiming",
+] }
+serde = "1.0.210"
+serde-wasm-bindgen = "0.6.5"
+gloo-timers = "0.3.0"
+gloo-utils = "0.2.0"
+humantime = "2.2.0"
+
+[profile.release]
+lto = true
+
+
+
+[dev-dependencies]
+console_error_panic_hook = "0.1.7"
