@@ -1,5 +1,4 @@
 pub mod utils;
-
 use hex;
 use hmac::{Hmac, Mac};
 use sha2::{Digest, Sha256};
@@ -32,6 +31,7 @@ impl ForgedResult {
 }
 
 /// Simulates a secret known only to the server
+/// whatever the secret is, it must be at least 16 bytes long
 const SECRET: &[u8] = b"supersecretkey!!"; // Using a 16-byte key for clarity
 
 /// Naive MAC vulnerable to length extension attacks.
@@ -137,20 +137,20 @@ pub fn length_extension_attack(
     // The final state is our new, forged MAC.
     let forged_mac: Vec<u8> = forged_state.iter().flat_map(|h| h.to_be_bytes()).collect();
 
-    println!("🚨 Length Extension Attack Details:");
-    println!("  - Guessed Secret Length: {}", guessed_secret_len);
-    println!(
+    console_log!("🚨 Length Extension Attack Details:");
+    console_log!("  - Guessed Secret Length: {}", guessed_secret_len);
+    console_log!(
         "  - Original Message (hex): {}",
         hex::encode(original_message)
     );
-    println!("  - Glue Padding (hex):     {}", hex::encode(&padding));
-    println!(
+    console_log!("  - Glue Padding (hex):     {}", hex::encode(&padding));
+    console_log!(
         "  - Appended Data (hex):    {}",
         hex::encode(data_to_append)
     );
-    println!("\n✅ Attack Successful!");
-    println!("Forged Message (hex):   {}", hex::encode(&forged_message));
-    println!("Forged MAC (hex):       {}", hex::encode(&forged_mac));
+    console_log!("\n✅ Attack Successful!");
+    console_log!("Forged Message (hex):   {}", hex::encode(&forged_message));
+    console_log!("Forged MAC (hex):       {}", hex::encode(&forged_mac));
 
     ForgedResult::new(forged_message, forged_mac)
 }
