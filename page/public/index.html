@@ -1,28 +1,86 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>SHA-256 Length Extension Attack Demo</title>
 	<style>
-		body { font-family: sans-serif; margin: 20px; }
-		label { display: block; margin-top: 10px; }
-		input[type="text"], input[type="number"] { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
-		button { margin-top: 15px; padding: 10px 15px; }
-		pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; overflow-x: auto; }
-		.error { color: red; }
+		body {
+			font-family: sans-serif;
+			margin: 20px;
+		}
+
+		label {
+			display: block;
+			margin-top: 10px;
+		}
+
+		input[type="text"],
+		input[type="number"] {
+			width: 100%;
+			padding: 8px;
+			margin-top: 5px;
+			box-sizing: border-box;
+		}
+
+		button {
+			margin-top: 15px;
+			padding: 10px 15px;
+		}
+
+		pre {
+			background-color: #f4f4f4;
+			padding: 10px;
+			border: 1px solid #ddd;
+			overflow-x: auto;
+		}
+
+		.error {
+			color: red;
+		}
 	</style>
 </head>
+
 <body>
 	<h1>SHA-256 Length Extension Attack Demo</h1>
+	<details>
+		<summary>What is a Length Extension Attack?</summary>
+		<p>A length extension attack allows an attacker to compute a valid MAC for a modified message, given the
+			original
+			message and its MAC, without knowing the secret key. This is possible due to the way certain hash functions
+			(like SHA-256) process data in blocks.</p>
+		<p>In this demo, you can simulate such an attack by providing an original message, its MAC, and additional data
+			to
+			append. The demo will compute a new valid MAC for the modified message.</p>
+		<div>
+			<p>1. Server signs a message using:
+			<pre><code>
+			hash = SHA256(secret || message)
+					</code></pre>
+			</p>
 
+			<p>2. Attacker knows:
+				- message
+			<pre><code> hash (digest of secret || message)
+								</code></pre>
+			- Not the secret
+			</p>
+			<p>3. Attacker wants to forge:
+				- message + malicious_data
+				- And produce a valid hash that the server will accept — **without knowing the secret**.
+			</p>
+			</div>
+			</details>
 	<div>
 		<label for="originalMessage">Original Message (string):</label>
 		<input type="text" id="originalMessage" value="user=alice&amount=1000">
 
 		<label for="originalMacHex">Original MAC (hex string):</label>
 		<input type="text" id="originalMacHex" value="c1b2f8d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f90123">
-		<small>Note: This MAC should be for `SECRET || originalMessage`. For testing, you can generate one using the `test_sha256_mac` logic from your Rust tests (with the correct `SECRET`). The default value here is a placeholder.</small>
+		<small>Note: This MAC should be for `SECRET || originalMessage`. For testing, you can generate one using the
+			`test_sha256_mac` logic from your Rust tests (with the correct `SECRET`). The default value here is a
+			placeholder.</small>
 
 		<label for="dataToAppend">Data to Append (string):</label>
 		<input type="text" id="dataToAppend" value="&admin=true">
@@ -42,7 +100,8 @@
 		<pre id="forgedMacHex">N/A</pre>
 		<p class="error" id="errorMessage"></p>
 	</div>
-
+	<br>
+	Author<a href="https://github.com/dajneem23"> @dajneem23</a> | Source code on <a href="https://github.com/dajneem23/rust-sha256-len-extension-attack">GitHub</a>
 	<script>
 		const originalMessageInput = document.getElementById('originalMessage');
 		const originalMacHexInput = document.getElementById('originalMacHex');
@@ -62,7 +121,7 @@
 			}
 			const byteArray = new Uint8Array(hexString.length / 2);
 			for (let i = 0; i < hexString.length; i += 2) {
-				byteArray[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
+				byteArray[ i / 2 ] = parseInt(hexString.substring(i, i + 2), 16);
 			}
 			return byteArray;
 		}
@@ -101,40 +160,41 @@
 			}
 		});
 
-	/**
-* First off we spawn a Web Worker. That's where our lib will be used. Note that
-* we set the `type` to `module` to enable support for ES modules.
-*/
-	const worker = new Worker("/worker.js", { type: "module" });
+		/**
+		* First off we spawn a Web Worker. That's where our lib will be used. Note that
+		* we set the `type` to `module` to enable support for ES modules.
+		*/
+		const worker = new Worker("/worker.js", { type: "module" });
 
-	/**
-	 * Here we listen for messages from the worker.
-	 */
-	worker.onmessage = ({ data }) => {
+		/**
+		* Here we listen for messages from the worker.
+		*/
+		worker.onmessage = ({ data }) => {
 		const { type, payload } = data;
 
-		console.log("Received message from worker:", data);
+			console.log("Received message from worker:", data);
 
-		if (type === 'READY') {
+			if (type === 'READY') {
 			statusEl.textContent = "Worker Ready. Fill inputs and click attack.";
 			attackButton.disabled = false;
-		} else if (type === 'RESULT') {
+			} else if (type === 'RESULT') {
 			statusEl.textContent = "Success!";
 			// payload.message and payload.digest are Uint8Array
 			forgedMessageHexEl.textContent = uint8ArrayToHex(payload.message);
 			forgedMacHexEl.textContent = uint8ArrayToHex(payload.digest);
-		} else if (type === 'ERROR') {
+			} else if (type === 'ERROR') {
 			statusEl.textContent = "Error (Worker)";
 			errorMessageEl.textContent = payload;
 			console.error("Worker error:", payload);
-		}
-	};
+			}
+			};
 
-	worker.onerror = (error) => {
+		worker.onerror = (error) => {
 		statusEl.textContent = "Critical Worker Error";
 		errorMessageEl.textContent = "Worker failed to load or encountered an unrecoverable error. Check console.";
 		console.error("Critical Worker Error:", error);
-	}
-</script>
-	</body>
+		}
+		</script>
+		</body>
+
 </html>
