@@ -126,6 +126,18 @@
 	Author <a href="https://github.com/dajneem23" target="_blank" rel="noopener noreferrer">@dajneem23</a> | Source
 	code on <a href="https://github.com/dajneem23/rust-sha256-len-extension-attack" target="_blank"
 		rel="noopener noreferrer">GitHub</a>
+	<details style="margin-top: 20px;">
+		<summary>Tech Stack</summary>
+		<p>This demo uses:</p>
+		<ul>
+			<li><strong>Rust</strong> for the cryptographic logic, compiled to WebAssembly.</li>
+			<li><strong>WebAssembly</strong>(wasm-bindgen) to run the cryptographic operations in the browser.</li>
+			<li><strong>Javascript</strong> to handle user input and communicate with the WebAssembly module.</li>
+			<li><strong>Cloudflare</strong> for hosting the demo + CI/CD.</li>
+		</ul>
+	</details>
+	<br>
+
 	<script>
 		const originalMessageInput = document.getElementById('originalMessage');
 		const originalMacHexInput = document.getElementById('originalMacHex');
